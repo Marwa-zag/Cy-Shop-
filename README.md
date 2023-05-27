@@ -11,28 +11,27 @@ Il existe deux modes, le mode gestion et le mode achat. Le mode gestion est prin
 
 
 Le mode gestion de ce programme permet de gérer les stocks du magasin. Il offre des fonctionnalités pour afficher les produits nécessitant un restockage urgent, connaître le stock d'un produit spécifique, augmenter le stock d'un produit et vérifier la capacité de stockage du magasin.
+ 
 Fonctionnalités
 
-    Affichage des produits nécessitant un restockage urgent :
-        Lorsque le mode gestion est sélectionné, en appelant la fonction afficher stock_bas, le programme affiche les produits dont les stocks sont à 0 ainsi que les 5 produits dont les stocks sont les plus bas. Cela permet à l'utilisateur de connaître les besoins urgents en restockage.
+Affichage des produits nécessitant un restockage urgent :
+Lorsque le mode gestion est sélectionné, en appelant la fonction afficher stock_bas, le programme affiche les produits dont les stocks sont à 0 ainsi que les 5 produits dont les stocks sont les plus bas. Cela permet à l'utilisateur de connaître les besoins urgents en restockage.
 
-    Affichage de la place restante en magasin :
-        Le programme affiche également la place restante en magasin, en tenant compte des différentes tailles des produits (petit, moyen, grand) et de leur capacité de stockage. Cela permet de savoir combien d'emplacements sont disponibles pour de nouveaux produits.
+Affichage de la place restante en magasin :
+Le programme affiche également la place restante en magasin, en tenant compte des différentes tailles des produits (petit, moyen, grand) et de leur capacité de stockage. Cela permet de savoir combien d'emplacements sont disponibles pour de nouveaux produits.
 
-    Consultation du stock d'un produit :
-        L'utilisateur peut rechercher le stock d'un produit en spécifiant soit son nom, soit sa référence. Le programme affiche ensuite la quantité en stock du produit recherché.
+Consultation du stock d'un produit :
+L'utilisateur peut rechercher le stock d'un produit en spécifiant soit son nom, soit sa référence. Le programme affiche ensuite la quantité en stock du produit recherché.
 
-    Augmentation du stock d'un produit :
-        L'utilisateur a la possibilité d'augmenter le stock d'un produit spécifique. Le programme demande ensuite la quantité à ajouter au stock existant et effectue la mise à jour correspondante.
+Augmentation du stock d'un produit :
+L'utilisateur a la possibilité d'augmenter le stock d'un produit spécifique. Le programme demande ensuite la quantité à ajouter au stock existant et effectue la mise à jour correspondante.
 
-    Vérification de la capacité de stockage :
-        Étant donné que le magasin a une capacité de stockage limitée, le programme vérifie si une demande d'ajout de produits dépasserait cette capacité. Si la demande dépasse la capacité disponible, le programme la refuse.
+Vérification de la capacité de stockage :
+Étant donné que le magasin a une capacité de stockage limitée, le programme vérifie si une demande d'ajout de produits dépasserait cette capacité. Si la demande dépasse la capacité disponible, le programme la refuse.
 
-Structure des fichiers
+Concernant les fichiers, les informations des produits sont stockées dans un fichier texte spécifique. Chaque ligne du fichier représente un produit avec ses informations séparées. Le nom du fichier se nomme produits.txt.
 
-    Les informations des produits sont stockées dans un fichier texte spécifique. Chaque ligne du fichier représente un produit avec ses informations séparées. Le nom du fichier se nomme produits.txt.
-
-    Les informations des clients sont stockées dans des fichiers texte individuels, chaque fichier porte le nom du client.
+Concernant les fichiers, les informations des clients sont stockées dans des fichiers texte individuels, chaque fichier porte le nom du client.
 
 Instructions d'utilisation
 
