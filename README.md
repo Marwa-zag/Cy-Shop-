@@ -31,13 +31,13 @@ Vérification de la capacité de stockage :
 
 Concernant les fichiers, les informations des produits sont stockées dans un fichier texte spécifique. Chaque ligne du fichier représente un produit avec ses informations séparées. Le nom du fichier se nomme produits.txt.
 
-Concernant les fichiers, les informations des clients sont stockées dans des fichiers texte individuels, chaque fichier porte le nom du client.
+Le programme peut également modifier un produit, supprimer un produit...
 
 Instructions d'utilisation
 
-    Lancer le programme et sélectionner le mode gestion.
-    Utiliser les options du menu pour consulter le stock d'un produit, augmenter le stock d'un produit ou vérifier la capacité de stockage.
-    Suivre les instructions du programme pour effectuer les actions souhaitées.
+Lancer le programme et sélectionner le mode gestion.
+Utiliser les options du menu pour consulter le stock d'un produit, augmenter le stock d'un produit ou vérifier la capacité de stockage...
+Suivre les instructions du programme pour effectuer les actions souhaitées.
     
     
     
@@ -51,7 +51,7 @@ Si le client est nouveau, son profil client sera créé et ajouté à la base de
 Les clients existants pourront voir les trois derniers achats, ils pourront également acheter des produits.
 Le prix total des achats sera affiché à la fin de la transaction. si un client ne souhaite pas créer un compte il pourra quand même s'il le souhaite effectuer des achats. 
 Si un produit souhaité n'est plus disponible, les clients mécontents ont la possibilité de se désinscrire de la liste des clients et d'explorer d'autres options, autrement dit aller vers d'autres librairies. Cela entraînera la suppression des fichiers associés au client.
-    
+Concernant les fichiers, les informations des clients sont stockées dans des fichiers texte individuels, chaque fichier porte le nom du client.
     
     
     
