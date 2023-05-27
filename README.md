@@ -43,8 +43,8 @@ Suivre les instructions du programme pour effectuer les actions souhaitées.
     
     
     
-  
-    Mode Achat
+  # Mode Achat 
+   
 
 Dans ce mode, les clients peuvent choisir s'ils possèdent déjà un compte ou s'ils sont de nouveaux clients.
 Si le client est nouveau, son profil client sera créé et ajouté à la base de données des clients.
