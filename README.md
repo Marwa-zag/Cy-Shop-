@@ -44,7 +44,7 @@ Suivre les instructions du programme pour effectuer les actions souhaitées.
     
     
   # Mode Achat 
-   
+   # Mode Achat
 
 Dans ce mode, les clients peuvent choisir s'ils possèdent déjà un compte ou s'ils sont de nouveaux clients.
 Si le client est nouveau, son profil client sera créé et ajouté à la base de données des clients.
@@ -53,9 +53,12 @@ Le prix total des achats sera affiché à la fin de la transaction. si un client
 Si un produit souhaité n'est plus disponible, les clients mécontents ont la possibilité de se désinscrire de la liste des clients et d'explorer d'autres options, autrement dit aller vers d'autres librairies. Cela entraînera la suppression des fichiers associés au client.
 Concernant les fichiers, les informations des clients sont stockées dans des fichiers texte individuels, chaque fichier porte le nom du client.
     
-    
-    
-    
+# Difficultés rencontrés 
+
+Nous avons eu du mal à créer une fonction qui permet de trouver un produit et qui l'affiche dans le panier du client, mais aussi pour afficher le montant total des produits. 
+Nous avons également eu du mal pour regarder si le client est déjà existant dans la base de données
+
+ 
     
     
     
