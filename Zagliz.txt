@@ -1,0 +1,13 @@
+SISTERS 9 4.90 
+LION 78 2.44 
+LIONNE 5 1.90 
+Animal 60 30.00 
+Prince 2000 19.99 
+Voir 67 2.90 
+Animal 60 30.00 
+Prince 2000 19.99 
+Voir 67 2.90 
+Animal 60 30.00 
+Prince 2000 19.99 
+Voir 67 2.90 
+

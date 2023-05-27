@@ -1,0 +1,42 @@
+Nom: Harry Potter et la pierre philosophale
+Référence: 5678
+Quantité en stock: 10
+Prix: 12.99
+Taille: 1
+
+Nom: Le Seigneur des Anneaux
+Référence: 1
+Quantité en stock: 0
+Prix: 15.50
+Taille: 0
+
+Nom: Les Miserables
+Référence: 701
+Quantité en stock: 2
+Prix: 9.99
+Taille: 2
+
+Nom: The Da Vinci Code
+Référence: 981
+Quantité en stock: 16
+Prix: 12.99
+Taille: 1
+
+Nom: The Lord of the Rings
+Référence: 671
+Quantité en stock: 0
+Prix: 15.99
+Taille: 0
+
+Nom: Brave New World
+Référence: 7896
+Quantité en stock: 0
+Prix: 9.99
+Taille: 2
+
+Nom: Les Aventures
+Référence: 1567
+Quantité en stock: 200
+Prix: 50.00
+Taille: 2
+

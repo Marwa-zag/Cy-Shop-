@@ -1,0 +1,5 @@
+Achat effectué :
+Nom Produit: Les Miserables
+Quantité: 7
+Prix unitaire: 2.90
+

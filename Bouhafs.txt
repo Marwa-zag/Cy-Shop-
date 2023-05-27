@@ -1,0 +1,21 @@
+Achat effectué :
+Nom Produit: Sisters
+Quantité: 90
+Prix unitaire: 5.90
+
+ID: 32604
+
+Achat effectué :
+Nom Produit: Les Miserables
+Quantité: 87
+Prix unitaire: 1.89
+
+ID: 32604
+
+Achat effectué :
+Nom Produit: Animal Farm
+Quantité: 89
+Prix unitaire: 54.89
+
+ID: 32604
+
