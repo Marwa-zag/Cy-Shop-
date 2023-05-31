@@ -1,4 +1,0 @@
-Nom: Kardallas
-Prénom: Mariam
-ID: 222
-Date de naissance: 19/01/2004
