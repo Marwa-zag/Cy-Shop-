@@ -53,7 +53,7 @@ Suivre les instructions du programme pour effectuer les actions souhaitées.
 Dans ce mode, les clients peuvent choisir s'ils possèdent déjà un compte ou s'ils sont de nouveaux clients.
 Si le client est nouveau, son profil client sera créé et ajouté à la base de données des clients.
 Les clients existants pourront voir les trois derniers achats, ils pourront également acheter des produits.
-Le prix total des achats sera affiché à la fin de la transaction. si un client ne souhaite pas créer un compte il pourra quand même s'il le souhaite effectuer des achats. 
+Le prix total des achats sera affiché à la fin de la transaction et les points de fidélites, un client ne peut pas faire un achat sans qu'il se connecte (il doit créer un compte).
 Si un produit souhaité n'est plus disponible, les clients mécontents ont la possibilité de se désinscrire de la liste des clients et d'explorer d'autres options, autrement dit aller vers d'autres librairies. Cela entraînera la suppression des fichiers associés au client.
 Concernant les fichiers, les informations des clients sont stockées dans des fichiers texte individuels, chaque fichier porte le nom du client.
     
