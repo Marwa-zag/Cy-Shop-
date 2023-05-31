@@ -60,8 +60,8 @@ Concernant les fichiers, les informations des clients sont stockées dans des fi
 # Difficultés rencontrés 
 
 Nous avons eu du mal à créer une fonction qui permet de trouver un produit et qui l'affiche dans le panier du client, mais aussi pour afficher le montant total des produits. 
-Nous avons également eu du mal pour regarder si le client est déjà existant dans la base de données
-Nous  avons eu du mal avec la fonction  float calculate_total_amount_from_file(const char *filename), gestion_stock(products, numProducts, totalSpace),Achat find_achat(const Client client, const int ref).
+Nous avons également eu du mal pour regarder si le client est déjà existant dans la base de données.
+
  
     
     
