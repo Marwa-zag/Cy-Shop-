@@ -1,5 +1,0 @@
-Nom: Daher
-Prénom: Fatima
-ID: 777
-Date de naissance: 01/01/2000
-
