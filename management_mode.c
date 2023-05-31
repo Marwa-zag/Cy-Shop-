@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
+#include <stdbool.h>
+#define MAX_HISTO 500
 #define MAX_NAME 100
 #define MAX_LINE 256
 #define MAX_LINE_LENGTH 200
@@ -17,20 +20,11 @@ void management_mode() {
   int choice;
   Product products[MAX_PRODUCTS];
   int numProducts = 0;
-  int totalSpace = 0;
+  int totalSpace = 500;
 
-  // Chargement des produits à partir du fichier
-  numProducts = load_products(products);
-
-  if (numProducts > 0) {
-    gestion_stock(products, numProducts, totalSpace);
-  } else {
-    printf("Aucun produit n'a été chargé à partir du fichier.\n");
-  }
-
-  while (1) {
-    printf("===== MODE GESTION =====:\n");
-    printf("===== CY LIBRARY GESTION =====:\n");
+  do {
+    printf("======== MODE GESTION =======:\n");
+    printf("====== CY LIBRARY GESTION ======:\n");
     printf("1. Ajouter un produit\n");
     printf("2. Modifier un produit\n");
     printf("3. Supprimer un produit\n");
@@ -99,17 +93,13 @@ void management_mode() {
       break;
     }
     case 9: {
-      printf("A la prochaine !!\n");
-      exit(0);
+      printf("=== A tres vite sur CY GESTION LIBRARY ===\n");
+      break;
     }
     default:
       printf("Choix invalide. Veuillez réessayer.\n");
     }
 
     printf("\n");
-  }
-
-  return 0;
+  } while (choice != 9);
 }
-
-

@@ -18,8 +18,9 @@ int main() {
   int choice;
 
   while (1) {
+    Product product;
     printf("======== BIENVENUE CY LIBRARY ========\n");
-    printf(" -> Choissez votre menu  \n");
+    printf(" ->  Choisissez votre mode  \n");
     printf("1. MODE GESTION \n");
     printf("2. MODE ACHAT \n");
     printf("3. QUITTER\n");
@@ -35,7 +36,7 @@ int main() {
         purchase_mode();
         break;
       case 3:
-        printf("Au Revoir ! A Bientot ! \n");
+        printf(" ====== Merci de votre visite ====== \n");
         exit(0);
       default:
         printf("Choix invalide. Veuillez réessayer.\n");

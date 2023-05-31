@@ -1,0 +1,6 @@
+Achat effectué :
+Nom Produit: The Da Vinci Code
+Quantité : 3
+Prix unitaire: 9.99
+Prix total: 29.97
+

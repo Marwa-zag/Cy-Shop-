@@ -1,0 +1,6 @@
+Achat effectué :
+Nom Produit: The Lord of the Rings
+Quantité : 4
+Prix unitaire: 12.99
+Prix total: 51.96
+

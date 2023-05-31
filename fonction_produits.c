@@ -5,6 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+#include <stdbool.h> 
+#define MAX_NAME 100
+#define MAX_HISTO 500
 #define MAX_NAME 100
 #define MAX_LINE 256
 #define MAX_LINE_LENGTH 200
@@ -35,7 +39,7 @@ void add_product(Product *p) {
   scanf(" %[^\n]", p->product_name);
   vider_buffer();
   printf("Ref produit: ");
-  scanf("%d", &p->product_ref);
+  scanf("%d", &p->product_ref); // Doit avoir 4 chiffres
   vider_buffer();
   printf("Quantite: ");
   scanf("%d", &p->quantity);
@@ -62,7 +66,7 @@ void add_product(Product *p) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Fonction modifier_produit
+// Fonction modifie_produit
 
 void modify_product(int product_ref) {
   FILE *file;
@@ -138,7 +142,7 @@ void modify_product(int product_ref) {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Fonction supprimer_produit
+// Fonction supprime_produit
 
 void remove_product(int ref_product) {
   FILE *fp_in, *fp_out;
@@ -200,7 +204,7 @@ void remove_product(int ref_product) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Fonction afficher_produit
+// Fonction affiche_produit
 
 void display_product(const Product *product) {
   printf("Nom: %s\n", product->product_name);
@@ -350,7 +354,7 @@ void display_product_by_name(const char *name) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Fonction qui augmente le stock  ( à revoir)
+// Fonction qui augmente le stock 
 
 void increase_stock(int ref_product) {
   FILE *fp_in;
@@ -411,7 +415,9 @@ void increase_stock(int ref_product) {
 }
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Récupere les informations du produits
 
 int load_products(Product products[]) {
   FILE *fp;
@@ -427,12 +433,11 @@ int load_products(Product products[]) {
 
   // Lecture des lignes du fichier et extraction des informations des produits
   while (fgets(line, MAX_LINE_LENGTH, fp) != NULL) {
-    if (sscanf(line,
-               "Nom: %[^'\n']\nRéférence: %d\nQuantité en stock: %d\nPrix: "
-               "%f\nTaille: %d\n\n",
+    if (sscanf(line, "Nom: %[^\n]\nRéférence: %d\nQuantité en stock: %d\nPrix: %f\nTaille: %d\n",
                products[numProducts].product_name,
                &products[numProducts].product_ref,
-               &products[numProducts].quantity, &products[numProducts].price,
+               &products[numProducts].quantity,
+               &products[numProducts].price,
                &products[numProducts].places) == 5) {
       numProducts++;
     }
@@ -442,21 +447,21 @@ int load_products(Product products[]) {
   fclose(fp);
   return numProducts;
 }
-//////////////////////////////////////////////
-/////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Affiche les produits dont les stocks sont égale à 0
 
 void display_products_with_zero_stock(Product products[], int numProducts) {
   int i;
   int found = 0;
 
-  // Parcours des produits et affichage de ceux avec un stock de 0 ou inférieur à 5
+  // Parcours des produits et affichage de ceux avec un stock inférieur ou égal à 5
   printf("Produits avec un stock de 0 ou inférieur à 5 :\n");
   for (i = 0; i < numProducts; i++) {
     if (products[i].quantity <= 5) {
-      printf("Nom: %s\nRéférence: %d\nQuantité en stock: %d\nPrix: "
-             "%.2f\nTaille: %d\n\n",
-             products[i].product_name, products[i].product_ref,
-             products[i].quantity, products[i].price, products[i].places);
+      printf("Nom: %s\nRéférence: %d\nQuantité en stock: %d\nPrix: %.2f\nTaille: %d\n\n",
+             products[i].product_name, products[i].product_ref, products[i].quantity,
+             products[i].price, products[i].places);
       found = 1;
     }
   }
@@ -466,13 +471,17 @@ void display_products_with_zero_stock(Product products[], int numProducts) {
     printf("Aucun produit avec un stock de 0 ou inférieur à 5.\n");
   }
 }
- /////////////////////////////////////////////
-//////////////////////////////////////////////
+
 
 void display_products_with_lowest_stock(Product products[], int numProducts, int numToDisplay) {
   int i, j;
   Product temp;
-  int found = 0; // Ajout d'une variable pour indiquer si des produits ont été trouvés
+  int found = 0;
+
+  if (numToDisplay > numProducts || numToDisplay <= 0) {
+    printf("Veuillez spécifier un nombre valide de produits à afficher.\n");
+    return;
+  }
 
   // Trier les produits par ordre croissant de stock
   for (i = 0; i < numProducts - 1; i++) {
@@ -485,32 +494,19 @@ void display_products_with_lowest_stock(Product products[], int numProducts, int
     }
   }
 
-  int displayedProducts = 0; // Compteur des produits affichés
-
   // Affichage des produits avec les stocks les plus bas
   printf("Produits avec les stocks les plus bas :\n");
-  for (i = 0; i < numProducts; i++) {
-    if (products[i].quantity <= 5) {
+  for (i = 0; i < numProducts && found < numToDisplay; i++) {
+    if (products[i].quantity > 0) {
       printf("Nom: %s\nRéférence: %d\nQuantité en stock: %d\nPrix: %.2f\nTaille: %d\n\n",
              products[i].product_name, products[i].product_ref, products[i].quantity,
              products[i].price, products[i].places);
-      displayedProducts++;
-      found = 1;
-
-      if (displayedProducts == numToDisplay) {
-        break; // Limite du nombre de produits à afficher atteinte
-      }
+      found++;
     }
   }
 
-  // Affichage d'un message si aucun produit correspondant n'a été trouvé
-  if (!found) {
-    printf("Aucun produit avec un stock de 0 ou inférieur à 5.\n");
-  }
-
-  // Affichage d'un message si le nombre de produits à afficher est invalide
-  if (numToDisplay > numProducts || numToDisplay <= 0) {
-    printf("Veuillez spécifier un nombre valide de produits à afficher.\n");
+  if (found == 0) {
+    printf("Aucun produit avec un stock supérieur à 0 trouvé.\n");
   }
 }
 
@@ -520,23 +516,26 @@ int calculate_remaining_space(Product products[], int numProducts, int totalSpac
 
   // Calcul de l'espace utilisé par les produits
   for (i = 0; i < numProducts; i++) {
-    usedSpace += products[i].places;
+    usedSpace += products[i].places * products[i].quantity; // Prendre en compte le stock
   }
 
   return totalSpace - usedSpace;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////
 
 void gestion_stock(Product products[], int numProducts, int totalSpace) {
   // Appel des fonctions pour afficher les produits avec un stock de 0 ou inférieur à 5
   // et les produits avec les stocks les plus bas
   display_products_with_zero_stock(products, numProducts);
 
-  printf("Produits avec les stocks les plus bas :\n");
-  display_products_with_lowest_stock(products, numProducts, 5);
+  // Modification ici: ajustement du nombre de produits à afficher
+  int numToDisplay = (numProducts < 5) ? numProducts : 5;
+  display_products_with_lowest_stock(products, numProducts, numToDisplay);
 
   // Calcul et affichage de l'espace restant en magasin
   int remainingSpace =
       calculate_remaining_space(products, numProducts, totalSpace);
   printf("Place restante en magasin : %d\n", remainingSpace);
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+

@@ -5,179 +5,247 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdbool.h>
+#include <ctype.h>
 #define MAX_NAME 100
 #define MAX_HISTO 500
+#define MAX_HISTO 500
+#define MAX_NAME 100
+#define MAX_LINE 256
+#define MAX_LINE_LENGTH 200
+#define MAX_REF_LENGTH 10
+#define MAX_PRODUCTS 100
+#define MAX_TAG 200
 
-void add_achat(const Client* c, const Achat a) {
-  // Générer le nom du fichier avec l'extension .txt
-  char filename[100];
-  sprintf(filename, "%s.txt", c->client_name);
-
-  // Ouvrir le fichier en mode "a" pour ajouter les achats à la fin du fichier existant ou créer un nouveau fichier s'il n'existe pas
-  FILE* f = fopen(filename, "a");
+bool product_exists(int ref) {
+  // Ouvrir le fichier des produits en mode lecture
+  FILE *f = fopen("produits.txt", "r");
   if (f == NULL) {
-    printf("Erreur lors de la création du fichier d'achat pour le client '%s'.\n", c->client_name);
-    return;
+    printf("Erreur : impossible d'ouvrir le fichier des produits.\n");
+    return false;
   }
 
-  // Écrire l'achat dans le fichier
-  fprintf(f, "Achat effectué :\n");
-  fprintf(f, "Nom Produit: %s\nQuantité: %d\nPrix unitaire: %.2f\n\n", a.product_name, a.quantity, a.unit_price);
-
-  // Écrire l'ID du client dans le fichier
-  fprintf(f, "ID: %d\n\n", c->client_id);
+  // Parcourir le fichier ligne par ligne
+  char line[MAX_LINE];
+  char reference[MAX_REF_LENGTH];
+  while (fgets(line, sizeof(line), f)) {
+    // Extraire la référence du produit de la ligne
+    if (sscanf(line, "Référence: %s", reference) == 1) {
+      int product_ref = atoi(reference);
+      // Si la référence correspond à celle recherchée, le produit existe
+      if (product_ref == ref) {
+        fclose(f);
+        return true;
+      }
+    }
+  }
 
   // Fermer le fichier
   fclose(f);
 
-  printf("L'achat a été ajouté pour le client '%s'. Un nouveau fichier d'achat a été créé : %s\n", c->client_name, filename);
+  // Si la référence n'a pas été trouvée, le produit n'existe pas
+  return false;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Fonction qui recupere les donnes d'un produit
+
+bool get_product_by_ref(int ref, Product *product) {
+  FILE *f = fopen("produits.txt", "r");
+  if (f == NULL) {
+    printf("Erreur : impossible d'ouvrir le fichier des produits.\n");
+    return false;
+  }
+
+  char line[MAX_LINE];
+  char tag[MAX_TAG];
+  bool found = false;
+  bool is_matching_product = false;
+  bool has_name = false;  // Ajout de la variable pour le nom du produit
+
+  while (fgets(line, sizeof(line), f)) {
+    if (sscanf(line, "%[^:]: %[^\n]", tag, line) == 2) {
+      if (strcmp(tag, "Référence") == 0) {
+        int current_ref = atoi(line);
+        if (current_ref == ref) {
+          is_matching_product = true;
+        } else {
+          is_matching_product = false;
+        }
+      } else if (is_matching_product) {
+        if (strcmp(tag, "Nom") == 0) {
+          strncpy(product->product_name, line, MAX_NAME);
+          has_name = true;  // Marquer la présence du nom du produit
+        } else if (strcmp(tag, "Quantité en stock") == 0) {
+          product->quantity = atoi(line);
+        } else if (strcmp(tag, "Prix") == 0) {
+          product->price = atof(line);
+        } else if (strcmp(tag, "Taille") == 0) {
+          product->t = atoi(line);
+        }
+        found = true;
+      }
+    }
+  }
+  fclose(f);
+
+  if (!found) {
+    printf("Erreur : le produit avec la référence %d n'a pas été trouvé.\n", ref);
+    return false;
+  }
+
+  if (!has_name) {  // Vérifier si le nom du produit a été trouvé
+    printf("Erreur : le nom du produit avec la référence %d n'a pas été trouvé.\n", ref);
+    return false;
+  }
+
+  return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Fonction qui ajoute un achat dans le fichier d'un client 
+
+void add_achat(const Client *c, const Achat a) {
+    if (!client_exists(c->client_id)) {
+        printf("Le client avec l'ID %d n'existe pas.\n", c->client_id);
+        return;
+    }
+
+    if (!product_exists(a.product_ref)) {
+        printf("Le produit avec la référence %d n'existe pas.\n", a.product_ref);
+        return;
+    }
+
+    char filename[MAX_NAME];
+    sprintf(filename, "%d_achats.txt", c->client_id);
+
+    FILE *f = fopen(filename, "a");
+    if (f == NULL) {
+        printf("Erreur lors de la création du fichier d'achat pour le client avec l'ID %d.\n", c->client_id);
+        return;
+    }
+
+    Product product;
+    if (!get_product_by_ref(a.product_ref, &product)) {
+        printf("Erreur lors de la récupération des informations du produit avec la référence %d.\n", a.product_ref);
+        fclose(f);
+        return;
+    }
+
+    float price_total = product.price * a.quantity;
+    int loyaltyPoints = calculateLoyaltyPoints(price_total); // Calcul des points de fidélité
+
+    fprintf(f, "Achat effectué :\n");
+    fprintf(f, "Nom Produit: %s\n", product.product_name);
+    fprintf(f, "Quantité : %d\n", a.quantity);
+    fprintf(f, "Prix unitaire: %.2f\n", product.price);
+    fprintf(f, "Prix total: %.2f\n\n", price_total);
+    fprintf(f, "Points de fidélité gagnés : %d\n\n", loyaltyPoints); // Ajout des points de fidélité
+
+    fclose(f);
+
+    printf("L'achat a été ajouté pour le client avec l'ID %d. Un nouveau fichier d'achat a été créé : %s\n", c->client_id, filename);
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Fonction qui calcule les points de fidelite 
+
+int calculateLoyaltyPoints(float expense)
+{
+    // Chaque tranche de 5 unités de dépense donne 2 points de fidélité
+    int points = (int)(expense / 5) * 2;
+    return points;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Fonction supprime achat 
+// Fonction supprime achat
 
-void delete_achat(const Client* c, const char* product_name) {
-  // Générer le nom du fichier avec l'extension .txt
-  char filename[100];
-  sprintf(filename, "%s.txt", c->client_name);
+void delete_achat(int client_id, const char* product_name) {
+  // Construire le nom du fichier d'achats
+  char filename[MAX_NAME + 5]; // +5 pour ajouter ".txt" à la fin
+  sprintf(filename, "%d_achats.txt", client_id);
 
-  // Ouvrir le fichier en mode "r+" pour lecture et écriture
-  FILE* f = fopen(filename, "r+");
-  if (f == NULL) {
-    printf("Erreur lors de l'ouverture du fichier d'achats pour le client '%s'.\n", c->client_name);
+  // Ouvrir le fichier d'achats en mode lecture de texte
+  FILE* fichier_achats = fopen(filename, "r");
+  if (fichier_achats == NULL) {
+    printf("Erreur : impossible d'ouvrir le fichier d'achats.\n");
     return;
   }
 
-  // Créer un fichier temporaire pour stocker les achats sans l'achat à supprimer
-  FILE* temp = fopen("temp.txt", "w");
-  if (temp == NULL) {
-    printf("Erreur lors de la création du fichier temporaire.\n");
-    fclose(f);
+  // Créer un fichier temporaire pour stocker les achats sans celui à supprimer
+  char temp_filename[MAX_NAME + 5]; // +5 pour ajouter ".tmp" à la fin
+  sprintf(temp_filename, "%d_achats.tmp", client_id);
+
+  // Ouvrir le fichier temporaire en mode écriture
+  FILE* fichier_temp = fopen(temp_filename, "w");
+  if (fichier_temp == NULL) {
+    printf("Erreur : impossible de créer le fichier temporaire.\n");
+    fclose(fichier_achats);
     return;
   }
 
-  // Parcourir les achats du client
-  Achat current_purchase;
-  int found = 0;
-  while (fscanf(f, "Achat effectué :\nNom Produit: %[^\n]\nQuantité: %d\nPrix unitaire: %f\n\n", current_purchase.product_name, &current_purchase.quantity, &current_purchase.unit_price) == 3) {
-    // Vérifier si l'achat correspond à celui que nous voulons supprimer
-    if (strcmp(current_purchase.product_name, product_name) == 0) {
-      found = 1;
-      continue; // Ignorer l'achat à supprimer en ne l'écrivant pas dans le fichier temporaire
+  // Variables pour stocker les informations des achats
+  char line[MAX_LINE];
+  int purchase_found = 0;
+
+  // Lecture du contenu du fichier d'achats
+  while (fgets(line, sizeof(line), fichier_achats) != NULL) {
+    if (strncmp(line, "Achat effectué :", 16) == 0) {
+      // L'achat commence, on vérifie si c'est celui qu'on cherche à supprimer
+      if (fgets(line, sizeof(line), fichier_achats) != NULL && strncmp(line, "Nom Produit:", 12) == 0) {
+        char current_product_name[50];
+        sscanf(line, "Nom Produit: %[^\n]", current_product_name);
+
+        // Vérifier si le nom du produit correspond
+        if (strcmp(current_product_name, product_name) == 0) {
+          // Marquer l'achat comme trouvé et passer à la ligne suivante
+          purchase_found = 1;
+          // Continue to skip lines until end of the purchase
+          while (fgets(line, sizeof(line), fichier_achats) != NULL && strncmp(line, "\n", 1) != 0);
+          continue;
+        }
+      }
     }
-    // Écrire les autres achats dans le fichier temporaire
-    fprintf(temp, "Achat effectué :\nNom Produit: %s\nQuantité: %d\nPrix unitaire: %.2f\n\n", current_purchase.product_name, current_purchase.quantity, current_purchase.unit_price);
-  }
 
-  // Si l'achat n'a pas été trouvé, afficher un message d'erreur
-  if (!found) {
-    printf("L'achat de '%s' pour le client '%s' n'a pas été trouvé.\n", product_name, c->client_name);
+    // Écrire la ligne dans le fichier temporaire
+    fputs(line, fichier_temp);
   }
 
   // Fermer les fichiers
-  fclose(f);
-  fclose(temp);
+  fclose(fichier_achats);
+  fclose(fichier_temp);
 
-  // Supprimer l'ancien fichier d'achats
+  // Supprimer le fichier d'achats existant
   remove(filename);
 
-  // Renommer le fichier temporaire avec le nom du fichier d'achats original
-  rename("temp.txt", filename);
+  // Renommer le fichier temporaire avec le nom du fichier d'achats initial
+  rename(temp_filename, filename);
 
-  printf("L'achat de '%s' pour le client '%s' a été supprimé.\n", product_name, c->client_name);
+  // Afficher le résultat de la suppression
+  if (purchase_found) {
+    printf("L'achat de '%s' pour le client avec l'ID %d a été supprimé.\n", product_name, client_id);
+  } else {
+    printf("L'achat de '%s' pour le client avec l'ID %d n'a pas été trouvé.\n", product_name, client_id);
+  }
 }
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-// Fonction trouver achat ( a revoir ca ne marche pas )
-
-Achat find_achat(const Client client, const int ref) {
-    Achat achat;
-    strcpy(achat.product_name, "");
-    achat.quantity = 0;
-    achat.unit_price = 0.0;
-
-    printf("Quantité du produit [%d] pour le client [%s %s] : ", ref, client.client_firstname, client.client_name);
-    scanf("%d", &achat.quantity);
-    vider_buffer();
-    printf("Prix unitaire du produit [%d] pour le client [%s %s] : ", ref, client.client_firstname, client.client_name);
-    scanf("%f", &achat.unit_price);
-    vider_buffer();
-
-    // Ouvrir le fichier "produits.txt" en lecture
-    FILE *produits_file = fopen("produits.txt", "r");
-    if (produits_file == NULL) {
-        printf("Erreur lors de l'ouverture du fichier produits.txt.\n");
-        return achat;
-    }
-
-    // Ouvrir le fichier du client en écriture en mode ajout (append)
-    char client_file_name[MAX_NAME + 5];  // +5 pour ajouter ".txt" à la fin
-    sprintf(client_file_name, "%s.txt", client.client_name);
-    FILE *client_file = fopen(client_file_name, "a");
-    if (client_file == NULL) {
-        printf("Erreur lors de l'ouverture du fichier du client %s.\n", client.client_name);
-        fclose(produits_file);
-        return achat;
-    }
-
-    // Parcourir le fichier "produits.txt" pour trouver le produit correspondant à la référence
-    int found = 0;
-    char line[MAX_LINE];
-    while (fgets(line, sizeof(line), produits_file) != NULL) {
-        int current_ref;
-        char product_name[MAX_NAME];
-        float price;
-
-        // Lire la référence, le nom du produit et le prix du produit à partir de la ligne
-        if (sscanf(line, "%d %[^\n] %f", &current_ref, product_name, &price) == 3) {
-            if (current_ref == ref) {
-                // Produit trouvé, écrire les détails dans le fichier du client
-                fprintf(client_file, "Achat effectué :\n");
-                fprintf(client_file, "Nom Produit: %s\n", product_name);
-                fprintf(client_file, "Quantité: %d\n", achat.quantity);
-                fprintf(client_file, "Prix unitaire: %.2f\n", achat.unit_price);
-                fprintf(client_file, "\n");
-
-                found = 1;
-                break;
-            }
-        }
-    }
-
-    // Fermer les fichiers
-    fclose(produits_file);
-    fclose(client_file);
-
-    if (!found) {
-        printf("Produit avec la référence %d non trouvé dans le fichier produits.txt.\n", ref);
-    }
-
-    return achat;
-}
-
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Affiche l'historique d'achat du client ( ca marche)
+// Affiche l'historique d'achat du client
 
-void display_achats(char client_name[]) {
+void display_achats(int client_id) {
   char name_fichier[50];
-  sprintf(name_fichier, "%s.txt", client_name);
+  sprintf(name_fichier, "%d_achats.txt", client_id);
   FILE *f = fopen(name_fichier, "r");
   if (f == NULL) {
-    printf(
-        "Erreur lors de l'ouverture du fichier d'achats pour le client '%s'.\n",
-        client_name);
+    printf("Erreur lors de l'ouverture du fichier d'achats pour le client avec l'ID %d.\n", client_id);
     return;
   }
 
-  printf("Client : %s\n", client_name);
+  printf("Achats du client avec l'ID : %d\n", client_id);
 
   printf("%-20s %-10s %-15s\n", "Nom du produit", "Quantité", "Prix unitaire");
 
@@ -188,18 +256,18 @@ void display_achats(char client_name[]) {
       int quantity;
       float unit_price;
 
-      fgets(line, sizeof(line), f);  // Lire la ligne "Nom Produit: ..."
-      sscanf(line, "Nom Produit: %[^:]:", product_name);
+      fgets(line, sizeof(line), f); // Lire la ligne "Nom Produit: ..."
+      sscanf(line, "Nom Produit: %[^\n]", product_name);
 
-      fgets(line, sizeof(line), f);  // Lire la ligne "Quantité: ..."
-      sscanf(line, "Quantité: %d", &quantity);
+      fgets(line, sizeof(line), f); // Lire la ligne "Quantité : ..."
+      sscanf(line, "Quantité : %d", &quantity);
 
-      fgets(line, sizeof(line), f);  // Lire la ligne "Prix unitaire: ..."
+      fgets(line, sizeof(line), f); // Lire la ligne "Prix unitaire: ..."
       sscanf(line, "Prix unitaire: %f", &unit_price);
 
       printf("%-20s %-10d %-15.2f\n", product_name, quantity, unit_price);
 
-      // Ignorer la ligne contenant l'ID
+      // Ignorer la ligne vide
       fgets(line, sizeof(line), f);
     }
   }
@@ -208,16 +276,14 @@ void display_achats(char client_name[]) {
 }
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Fonction qui affiche les 3 derniers achats effectuer par le client 5 verifier
-// si il prend en compte les acahts avec les espaces)
+// Fonction qui affiche les 3 derniers achats effectuer par le client 
 
-void display_three_last_achats(char client_name[]) {
+void display_three_last_achats(int client_id) {
   // Construire le nom du fichier d'achats
   char filename[MAX_NAME + 5]; // +5 pour ajouter ".txt" à la fin
-  sprintf(filename, "%s.txt", client_name);
+  sprintf(filename, "%d_achats.txt", client_id);
 
   // Ouverture du fichier d'achats en mode lecture de texte
   FILE *fichier_achats = fopen(filename, "r");
@@ -231,10 +297,7 @@ void display_three_last_achats(char client_name[]) {
   int quantity;
   float unit_price;
 
-  // Variables pour stocker les 3 derniers achats
-  char last_product_names[3][50];
-  int last_quantities[3];
-  float last_unit_prices[3];
+  Achat last_purchases[3];
   int nb_purchases_found = 0;
 
   // Lecture du contenu du fichier d'achats
@@ -243,14 +306,14 @@ void display_three_last_achats(char client_name[]) {
     if (strncmp(line, "Nom Produit:", 12) == 0) {
       sscanf(line, "Nom Produit: %[^\n]", product_name);
       fgets(line, sizeof(line), fichier_achats);
-      sscanf(line, "Quantité: %d", &quantity);
+      sscanf(line, "Quantité : %d", &quantity);
       fgets(line, sizeof(line), fichier_achats);
       sscanf(line, "Prix unitaire: %f", &unit_price);
 
-      // Stockage des informations de l'achat dans les tableaux
-      strncpy(last_product_names[nb_purchases_found], product_name, sizeof(product_name));
-      last_quantities[nb_purchases_found] = quantity;
-      last_unit_prices[nb_purchases_found] = unit_price;
+      // Stockage des informations de l'achat dans la structure
+      strncpy(last_purchases[nb_purchases_found].product_name, product_name, sizeof(product_name));
+      last_purchases[nb_purchases_found].quantity = quantity;
+      last_purchases[nb_purchases_found].unit_price = unit_price;
 
       nb_purchases_found++;
       if (nb_purchases_found >= 3) {
@@ -264,45 +327,47 @@ void display_three_last_achats(char client_name[]) {
 
   // Affichage des 3 derniers achats (ou moins si moins de 3 achats)
   int i;
-  printf("Les 3 derniers achats de %s :\n", client_name);
+  printf("Les 3 derniers achats du client avec l'ID %d :\n", client_id);
+  printf("+----------------------------------------+\n");
+  printf("|  Produit         | Quantité |  Prix    |\n");
+  printf("+----------------------------------------+\n");
   for (i = nb_purchases_found - 1; i >= 0; i--) {
-    printf("Produit : %s\n", last_product_names[i]);
-    printf("Quantité : %d\n", last_quantities[i]);
-    printf("Prix unitaire : %.2f\n", last_unit_prices[i]);
-    printf("\n");
+    printf("| %-16s| %-9d| $ %-7.2f|\n", last_purchases[i].product_name, last_purchases[i].quantity, last_purchases[i].unit_price);
+    printf("+----------------------------------------+\n");
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////// Fonction pour la livraison (ne fonctionne pas)
 
-///////////////////////////////////////////////////////////////////////////////////////////////
+//void livraison(Produit produits[], int nbProduits) {
+    //char ref[MAX_REF];
+    //int quantiteLivree;
 
-// Fonction qui affiche le montant total des achats (Verifier plus tard si ya le
-// temps avec la date)
+    //printf("Saisir la référence du produit à livrer :\n");
+    //scanf("%s", ref);
+    //vider_buffer();
 
-float calculate_total_amount_from_file(const char *filename) {
-  FILE *file = fopen(filename, "r");
-  if (file == NULL) {
-    printf("Erreur lors de l'ouverture du fichier d'achats.\n");
-    return 0.0;
-  }
+    // Recherche du produit dans le stock
+    //int index = -1;
+    //for (int i = 0; i < nbProduits; i++) {
+        //if (strcmp(ref, produits[i].ref) == 0) {
+            //index = i;
+            //break;
+        //}
+    //}
 
-  float total_amount = 0.0;
-  char product_name[MAX_NAME];
-  int quantity;
-  float unit_price;
+    //if (index == -1) {
+        //printf("Le produit avec la référence %s n'existe pas dans le stock.\n", ref);
+        //return;
+    //}
 
-  // Lecture des achats du fichier et calcul du montant total
-  while (fscanf(file, "%s %d %f", product_name, &quantity, &unit_price) == 3) {
-    // Calcul du montant pour cet achat
-    float amount = quantity * unit_price;
-    total_amount += amount;
-  }
+    //printf("Saisir la quantité à livrer :\n");
+    //scanf("%d", &quantiteLivree);
+    //vider_buffer();
 
-  fclose(file);
+    // Mise à jour de la quantité du produit dans le stock
+    //produits[index].quantite += quantiteLivree;
 
-  // Affichage du montant total des achats
-  printf("Montant total des achats pour le client : %.2f\n", total_amount);
-
-  return total_amount;
-}
+    //printf("La livraison de %d unité(s) du produit %s (ref: %s) a été effectuée avec succès.\n", quantiteLivree, produits[index].nom, produits[index].ref);
+//}
 

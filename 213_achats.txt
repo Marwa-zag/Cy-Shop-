@@ -1,0 +1,26 @@
+Achat effectué :
+Nom Produit: Naruto
+Quantité : 2
+Prix unitaire: 30.99
+Prix total: 61.98
+
+Achat effectué :
+Nom Produit: Les Miserables
+Quantité : 5
+Prix unitaire: 12.99
+Prix total: 64.95
+
+Achat effectué :
+Nom Produit: Brave New World
+Quantité : 3
+Prix unitaire: 15.99
+Prix total: 47.97
+
+Achat effectué :
+Nom Produit: Naruto
+Quantité : 4
+Prix unitaire: 30.99
+Prix total: 123.96
+
+Points de fidélité gagnés : 48
+

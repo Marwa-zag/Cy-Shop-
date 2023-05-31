@@ -56,4 +56,6 @@ int calculate_remaining_space(Product products[], int numProducts, int totalSpac
 
 void gestion_stock(Product products[], int numProducts, int totalSpace);
 
+
+
 #endif /* PRODUITS_H */

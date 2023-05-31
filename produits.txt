@@ -4,21 +4,15 @@ Quantité en stock: 10
 Prix: 12.99
 Taille: 1
 
-Nom: Le Seigneur des Anneaux
-Référence: 1
-Quantité en stock: 0
-Prix: 15.50
-Taille: 0
-
 Nom: Les Miserables
 Référence: 701
-Quantité en stock: 2
+Quantité en stock: 0
 Prix: 9.99
 Taille: 2
 
 Nom: The Da Vinci Code
 Référence: 981
-Quantité en stock: 16
+Quantité en stock: 4
 Prix: 12.99
 Taille: 1
 
@@ -34,9 +28,27 @@ Quantité en stock: 0
 Prix: 9.99
 Taille: 2
 
-Nom: Les Aventures
-Référence: 1567
-Quantité en stock: 200
-Prix: 50.00
+Nom: Alice Aux Pays Des Merveilles
+Référence: 1968
+Quantité en stock: 140
+Prix: 30.99
 Taille: 2
+
+Nom: Naruto
+Référence: 3459
+Quantité en stock: 25
+Prix: 17.90
+Taille: 1
+
+Nom: One Piece
+Référence: 1977
+Quantité en stock: 27
+Prix: 25.99
+Taille: 1
+
+Nom: Clara
+Référence: 7890
+Quantité en stock: 12
+Prix: 4.69
+Taille: 1
 
